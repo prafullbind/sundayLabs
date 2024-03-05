@@ -51,7 +51,7 @@ catch(ex){
 
   const getAllReports = async() => {
      try{
-      let response = await axios.get("/getData");
+      let response = await axios.get("http://localhost:2410/getData");
       let {data} = response;
       setPastReports(data);
      }

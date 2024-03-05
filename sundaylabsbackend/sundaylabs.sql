@@ -1,5 +1,5 @@
 
--- Table structure for table `croImage`
+-- Table structure for table `cropImage`
 --Database name: sundaylabs
 
 CREATE TABLE cropImage (

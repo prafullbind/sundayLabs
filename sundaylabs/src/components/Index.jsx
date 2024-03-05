@@ -51,7 +51,7 @@ catch(ex){
 
   const getAllReports = async() => {
      try{
-      let response = await axios.get("/getData");
+      let response = await axios.get("http://localhost:2410/getData");
       let {data} = response;
       setPastReports(data);
      }
@@ -67,6 +67,8 @@ catch(ex){
   useEffect(() => {
     getAllReports();
   },[])
+
+  
   return (
     <div className='flex flex-col justify-center items-center m-4'>
       <CropSelection crops={crops} selectedCrop={selectedCrop} onSelectCrop={handleSelectCrop} />
@@ -74,7 +76,7 @@ catch(ex){
       {loading && <LoadingAnimation />}
       {capturedImage && <button className='bg-green-600 text-white px-6 py-2 rounded m-4' onClick={handleSubmit}>Submit</button>}
       {report && <ReportDisplay report={report} />}
-      <PastReports reports={pastReports} onSelectReport={handleSelectReport} />
+      { pastReports.length >0 &&<PastReports reports={pastReports} onSelectReport={handleSelectReport} />}
     </div>
   );
 };

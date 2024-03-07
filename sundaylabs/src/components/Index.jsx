@@ -40,7 +40,9 @@ const Index = () => {
       setLoading(false);
       alert("Report generated");
       setReport(data);
-    }, 60000);
+      setCapturedImage(null)
+      setSelectedCrop('');
+    }, 600);
 }
 catch(ex){
     console.log(ex);
@@ -66,7 +68,7 @@ catch(ex){
 
   useEffect(() => {
     getAllReports();
-  },[])
+  },[report.insertId])
 
   
   return (
@@ -76,7 +78,7 @@ catch(ex){
       {loading && <LoadingAnimation />}
       {capturedImage && <button className='bg-green-600 text-white px-6 py-2 rounded m-4' onClick={handleSubmit}>Submit</button>}
       {report && <ReportDisplay report={report} />}
-      { pastReports.length >0 &&<PastReports reports={pastReports} onSelectReport={handleSelectReport} />}
+      {pastReports.length >0 &&<PastReports reports={pastReports} onSelectReport={handleSelectReport} />}
     </div>
   );
 };

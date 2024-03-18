@@ -19,9 +19,9 @@ const PastReports = ({ reports, onSelectReport }) => {
             <td className='border p-1'>{report.soilManage}</td>
             <td className='border p-1'>{report.irrigationManage}</td>
             <td className='border p-1'>{report.diseaseControl}</td>
-            {/* <td><img 
-            src={report.imageData}
-            alt="image" /></td> */}
+            <td><img 
+            src={`http://localhost:2410/images/`+report.imageData} style={{width:"15px", height:"150px"}}
+            alt="image" /></td>
           </tr>
         ))}
      </table>

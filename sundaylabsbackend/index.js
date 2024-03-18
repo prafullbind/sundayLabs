@@ -1,6 +1,7 @@
-const express = require('express');
-const multer = require('multer');
-const mysql = require('mysql');
+import express from "express";
+import mysql from "mysql";
+import fs from "fs";
+import mime from "mime";
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(function(req, res, next) {
@@ -10,7 +11,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-var cors = require('cors')
+import cors from "cors";
 app.use(cors())
 
 
@@ -26,10 +27,6 @@ const port = 2410;
 app.listen(port, () => console.log(`Node app listening on port ${port}!`));
 
 
-// Multer configuration to handle image uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
 
 connection.connect((err) => {
   if (err) {
@@ -39,19 +36,42 @@ connection.connect((err) => {
   console.log('Connected to MySQL database');
 });
 
+
+function decodeBase64Image(dataString) {
+    var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+      response = {};
+  
+    if (matches.length !== 3) {
+      return new Error('Invalid input string');
+    }
+  
+    response.type = matches[1];
+    response.data = new Buffer(matches[2], 'base64');
+  
+    return response;
+  }
+
+
 // Route to handle image upload
-app.post('/upload', upload.single('image'), (req, res) => {
-  const { image } = req.body;
+app.post('/upload', (req, res) => {
+     const { image } = req.body;
   // Get the image data from req.file.buffer
-  const imageData = Buffer.from(image, 'base64');
-  //here taking static data
+//   const imageData = Buffer.from(image, 'base64');
+var decodedImg = decodeBase64Image(image);
+var imageBuffer = decodedImg.data;
+var type = decodedImg.type;
+var extension = mime.getExtension(type);
+var fileName =  `image`+Date.now()+"." + extension;
+try{
+      fs.writeFileSync("./images/" + fileName, imageBuffer, 'utf8');
+        //here taking static data
   let qualitySeeds = "Choosing seeds that are disease-resistant and well-suited to the climate will help to ensure a healthy crop.";
   let soilManage = "This includes testing the soil for nutrients and pH levels, and adding amendments as needed to create a healthy environment for plant growth.";
   let irrigationManage = "Providing the right amount of water at the right time is essential for crop quality.";
   let diseaseControl = "This can be done through a variety of methods, including biological control, cultural practices, and the use of pesticides.";
 
   const insertQuery = `INSERT INTO cropImage (qualitySeeds, soilManage, irrigationManage, diseaseControl, imageData) VALUES (?, ?, ?, ?, ?)`;
-  const values = [qualitySeeds, soilManage, irrigationManage, diseaseControl, imageData];
+  const values = [qualitySeeds, soilManage, irrigationManage, diseaseControl, fileName];
 
   // Execute the query
   connection.query(insertQuery, values, (error, results, fields) => {
@@ -62,6 +82,10 @@ app.post('/upload', upload.single('image'), (req, res) => {
       }
       res.status(200).json(results);
   });
+   }
+catch(err){
+   console.error(err)
+}
 });
 
 // Route to get all data from the cropImage table
@@ -75,11 +99,11 @@ app.get('/getData', (req, res) => {
           return;
       }
 
-      const processedResults = results.map(result => ({
-          ...result,
-          imageData: `data:image/png;base64,${result.imageData}`
-      }));
-      res.status(200).json(processedResults);
+    //   const processedResults = results.map(result => ({
+    //       ...result,
+    //       imageData: `data:image/png;base64,${result.imageData}`
+    //   }));
+      res.status(200).json(results);
   });
 });
 

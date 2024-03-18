@@ -34,7 +34,7 @@ const ReportDisplay = ({ report }) => {
     doc.text(`Soil Management : ${reportData.soilManage}`, 10, 30);
     doc.text(`Irrigation Management : ${reportData.irrigationManage}`, 10, 40);
     doc.text(`Disease Control : ${reportData.diseaseControl}`, 10, 50);
-    doc.save('data.pdf');
+    doc.save('report'+'-'+ Date.now()+'.pdf');
 
   };
   
